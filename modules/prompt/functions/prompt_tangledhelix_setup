@@ -1,21 +1,10 @@
-# A theme based on steeef, which was...
-# A theme based on Steve Losh's prompt with VCS_INFO integration.
-#
-# Authors:
-#   Steve Losh <steve@stevelosh.com>
-#   Bart Trojanowski <bart@jukie.net>
-#   Brian Carper <brian@carper.ca>
-#   steeef <steeef@gmail.com>
-#   Sorin Ionescu <sorin.ionescu@gmail.com>
-#
+# A theme based on steeef
 # 'tangledhelix' variant by Dan Lowe <dan@tangledhelix.com>
-#
 
 function tangledhelix_prompt_char {
   git branch >/dev/null 2>/dev/null && echo '±' && return
   hg root >/dev/null 2>/dev/null && echo '☿' && return
   echo '○'
-  #echo '%#'
 }
 
 function virtualenv_info {
@@ -25,34 +14,15 @@ function virtualenv_info {
 }
 
 function prompt_tangledhelix_precmd {
-  if [[ -n "$__PROMPT_TANGLEDHELIX_VCS_UPDATE" ]] ; then
-    # Check for untracked files or updated submodules since vcs_info doesn't.
-    if [[ ! -z $(git ls-files --other --exclude-standard 2> /dev/null) ]]; then
-      __PROMPT_TANGLEDHELIX_VCS_UPDATE=1
-      fmt_branch="(${__PROMPT_TANGLEDHELIX_COLORS[1]}%b%f%u%c${__PROMPT_TANGLEDHELIX_COLORS[4]}●%f)"
-    else
-      fmt_branch="(${__PROMPT_TANGLEDHELIX_COLORS[1]}%b%f%u%c)"
-    fi
-    zstyle ':vcs_info:*:prompt:*' formats "${fmt_branch}"
-
-    vcs_info 'prompt'
-    __PROMPT_TANGLEDHELIX_VCS_UPDATE=''
+  # Check for untracked files or updated submodules since vcs_info doesn't.
+  if [[ ! -z $(git ls-files --other --exclude-standard 2> /dev/null) ]]; then
+    fmt_branch="(${__PROMPT_TANGLEDHELIX_COLORS[1]}%b%f%u%c${__PROMPT_TANGLEDHELIX_COLORS[4]}●%f)"
+  else
+    fmt_branch="(${__PROMPT_TANGLEDHELIX_COLORS[1]}%b%f%u%c)"
   fi
-}
+  zstyle ':vcs_info:*:prompt:*' formats "${fmt_branch}"
 
-function prompt_tangledhelix_preexec {
-  case "$(history $HISTCMD)" in
-    (*git*)
-      __PROMPT_TANGLEDHELIX_VCS_UPDATE=1
-    ;;
-    (*svn*)
-      __PROMPT_TANGLEDHELIX_VCS_UPDATE=1
-    ;;
-  esac
-}
-
-function prompt_tangledhelix_chpwd {
-  __PROMPT_TANGLEDHELIX_VCS_UPDATE=1
+  vcs_info 'prompt'
 }
 
 function prompt_tangledhelix_setup {
@@ -64,10 +34,6 @@ function prompt_tangledhelix_setup {
   autoload -Uz vcs_info
 
   add-zsh-hook precmd prompt_tangledhelix_precmd
-  add-zsh-hook preexec prompt_tangledhelix_preexec
-  add-zsh-hook chpwd prompt_tangledhelix_chpwd
-
-  __PROMPT_TANGLEDHELIX_VCS_UPDATE=1
 
   __PROMPT_TANGLEDHELIX_COLORS=(
     "%F{cyan}"
