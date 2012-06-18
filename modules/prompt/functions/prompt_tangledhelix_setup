@@ -1,7 +1,7 @@
 # A theme based on steeef
 # 'tangledhelix' variant by Dan Lowe <dan@tangledhelix.com>
 
-function tangledhelix_prompt_char {
+function prompt_tangledhelix_promptchar {
   git branch >/dev/null 2>/dev/null && echo '±' && return
   hg root >/dev/null 2>/dev/null && echo '☿' && return
   echo '○'
@@ -16,11 +16,17 @@ function virtualenv_info {
 function prompt_tangledhelix_precmd {
   # Check for untracked files or updated submodules since vcs_info doesn't.
   if [[ ! -z $(git ls-files --other --exclude-standard 2> /dev/null) ]]; then
-    fmt_branch="(${__PROMPT_TANGLEDHELIX_COLORS[1]}%b%f%u%c${__PROMPT_TANGLEDHELIX_COLORS[4]}●%f)"
+    fmt_branch="on ${__PROMPT_TANGLEDHELIX_COLORS[1]}%b %f%u%c${__PROMPT_TANGLEDHELIX_COLORS[4]}●%f"
   else
-    fmt_branch="(${__PROMPT_TANGLEDHELIX_COLORS[1]}%b%f%u%c)"
+    fmt_branch="on ${__PROMPT_TANGLEDHELIX_COLORS[1]}%b %f%u%c"
   fi
   zstyle ':vcs_info:*:prompt:*' formats "${fmt_branch}"
+
+  if [[ "$(git status 2>/dev/null)" =~ ' ahead of ' ]]; then
+    fmt_git_ahead=" ⬆"
+  else
+    fmt_git_ahead=""
+  fi
 
   vcs_info 'prompt'
 }
@@ -57,7 +63,7 @@ function prompt_tangledhelix_setup {
   # %a - action (e.g. rebase-i)
   # %R - repository path
   # %S - path in the repository
-  local fmt_branch="(${__PROMPT_TANGLEDHELIX_COLORS[1]}%b%f%u%c)"
+  local fmt_branch="on ${__PROMPT_TANGLEDHELIX_COLORS[1]}%b %f%u%c"
   local fmt_action="(${__PROMPT_TANGLEDHELIX_COLORS[5]}%a%f)"
   local fmt_unstaged="${__PROMPT_TANGLEDHELIX_COLORS[2]}●%f"
   local fmt_staged="${__PROMPT_TANGLEDHELIX_COLORS[5]}●%f"
@@ -74,8 +80,8 @@ function prompt_tangledhelix_setup {
   zstyle ':vcs_info:*:prompt:*' nvcsformats   ""
 
   PROMPT="
-${__PROMPT_TANGLEDHELIX_COLORS[3]}%n%f at ${__PROMPT_TANGLEDHELIX_COLORS[2]}${_prompt_m}%f in ${__PROMPT_TANGLEDHELIX_COLORS[5]}%~%f "'${vcs_info_msg_0_}'"
-"'$(virtualenv_info)'"\$(tangledhelix_prompt_char) "
+${__PROMPT_TANGLEDHELIX_COLORS[3]}%n%f at ${__PROMPT_TANGLEDHELIX_COLORS[2]}${_prompt_m}%f in ${__PROMPT_TANGLEDHELIX_COLORS[5]}%~%f "'${vcs_info_msg_0_}${fmt_git_ahead}'"
+"'$(virtualenv_info)'"\$(prompt_tangledhelix_promptchar) "
 }
 
 prompt_tangledhelix_setup "$@"
