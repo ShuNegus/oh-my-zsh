@@ -69,9 +69,13 @@ function prompt_tangledhelix_setup {
   local fmt_unstaged="${__PROMPT_TANGLEDHELIX_COLORS[2]}●%f"
   local fmt_staged="${__PROMPT_TANGLEDHELIX_COLORS[5]}●%f"
 
-  local _prompt_m="%m"
-  if [[ $(uname -n) =~ '^[^.]+\.[^.]+\.[^.]+\.[^.]' ]]; then
+  local _prompt_m
+  if [[ -n "$(command -v ec2-metadata)" ]]; then
+    _prompt_m=${${=$(ec2-metadata -i)}[2]}
+  elif [[ $(uname -n) =~ '^[^.]+\.[^.]+\.[^.]+\.[^.]' ]]; then
     _prompt_m="%2m"
+  else
+    _prompt_m="%m"
   fi
 
   zstyle ':vcs_info:*:prompt:*' unstagedstr   "${fmt_unstaged}"
