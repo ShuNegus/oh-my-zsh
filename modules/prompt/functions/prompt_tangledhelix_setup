@@ -4,6 +4,7 @@
 function prompt_tangledhelix_promptchar {
   git branch >/dev/null 2>/dev/null && echo '±' && return
   hg root >/dev/null 2>/dev/null && echo '☿' && return
+  # [[ $UID -eq 0 ]] && echo '▶' || echo '○'
   echo '○'
 }
 
