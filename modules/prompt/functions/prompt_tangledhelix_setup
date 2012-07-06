@@ -1,35 +1,36 @@
-# A theme based on steeef
-# 'tangledhelix' variant by Dan Lowe <dan@tangledhelix.com>
+
+# The guts of sorin married to the look of steeef, plus tweaks.
+# Designed for Solarized Dark.
+
+if [[ $TERM = *256color* ]]; then
+  __PROMPT_TANGLEDHELIX_COLORS=(
+    "%F{81}"    # turquoise
+    "%F{135}"   # purple
+    "%F{166}"   # orange
+    "%F{118}"   # lime green
+  )
+else
+  __PROMPT_TANGLEDHELIX_COLORS=(
+    "%F{cyan}"
+    "%F{magenta}"
+    "%F{yellow}"
+    "%F{green}"
+  )
+fi
 
 function prompt_tangledhelix_promptchar {
   git branch >/dev/null 2>/dev/null && echo '±' && return
   hg root >/dev/null 2>/dev/null && echo '☿' && return
-  # [[ $UID -eq 0 ]] && echo '▶' || echo '○'
-  echo '○'
-}
-
-function virtualenv_info {
-  if [[ -n "$VIRTUAL_ENV" ]]; then
-    print "(${VIRTUAL_ENV:t}) "
-  fi
+  [[ $UID -eq 0 ]] && echo '#' || echo '❯'
 }
 
 function prompt_tangledhelix_precmd {
-  # Check for untracked files or updated submodules since vcs_info doesn't.
-  if [[ ! -z $(git ls-files --other --exclude-standard 2> /dev/null) ]]; then
-    fmt_branch="on ${__PROMPT_TANGLEDHELIX_COLORS[1]}%b %f%u%c${__PROMPT_TANGLEDHELIX_COLORS[4]}●%f"
-  else
-    fmt_branch="on ${__PROMPT_TANGLEDHELIX_COLORS[1]}%b %f%u%c"
-  fi
-  zstyle ':vcs_info:*:prompt:*' formats "${fmt_branch}"
+  setopt LOCAL_OPTIONS
+  unsetopt XTRACE KSH_ARRAYS
 
-  if [[ "$(git status 2>/dev/null)" =~ ' ahead of ' ]]; then
-    fmt_git_ahead=" ⬆"
-  else
-    fmt_git_ahead=""
+  if (( $+functions[git-info] )); then
+    git-info
   fi
-
-  vcs_info 'prompt'
 }
 
 function prompt_tangledhelix_setup {
@@ -38,55 +39,41 @@ function prompt_tangledhelix_setup {
   prompt_opts=(cr percent subst)
 
   autoload -Uz add-zsh-hook
-  autoload -Uz vcs_info
-
   add-zsh-hook precmd prompt_tangledhelix_precmd
 
-  __PROMPT_TANGLEDHELIX_COLORS=(
-    "%F{cyan}"
-    "%F{yellow}"
-    "%F{magenta}"
-    "%F{red}"
-    "%F{green}"
-  )
+  zstyle ':omz:module:editor' completing '%B%F{red}...%f%b'
+  zstyle ':omz:module:editor:keymap:primary' overwrite ' %F{red}♺%f'
+  zstyle ':omz:module:editor:keymap' alternate ' %F{yellow}❮%f%B%F{red}❮%f%b%F{red}❮%f'
+  zstyle ':omz:module:git' action ':%%B%F{yellow}%s%f%%b'
+  zstyle ':omz:module:git' added ' %%B%F{green}✚%f%%b'
+  zstyle ':omz:module:git' ahead ' %%B%F{yellow}⬆%f%%b'
+  zstyle ':omz:module:git' behind ' %%B%F{yellow}⬇%f%%b'
+  zstyle ':omz:module:git' branch ':${__PROMPT_TANGLEDHELIX_COLORS[1]}%b%f'
+  zstyle ':omz:module:git' commit ':%F{green}%.7c%f'
+  zstyle ':omz:module:git' deleted ' %%B%F{red}✖%f%%b'
+  zstyle ':omz:module:git' modified ' %%B%F{blue}✱%f%%b'
+  zstyle ':omz:module:git' position ':%F{green}%p%f'
+  zstyle ':omz:module:git' renamed ' %%B%F{magenta}➜%f%%b'
+  zstyle ':omz:module:git' stashed ' %%B%F{cyan}✭%f%%b'
+  zstyle ':omz:module:git' unmerged ' %%B%F{yellow}═%f%%b'
+  zstyle ':omz:module:git' untracked ' %%B%F{white}◼%f%%b'
+  zstyle ':omz:module:git' info \
+    'prompt'  ' on %F{blue}git%f$(coalesce "%b" "%p" "%c")%s' \
+    'rprompt' '%A%B%S%a%d%m%r%U%u'
 
-  # Enable VCS systems you use.
-  zstyle ':vcs_info:*' enable bzr git hg svn
-
-  # check-for-changes can be really slow.
-  # You should disable it if you work with large repositories.
-  zstyle ':vcs_info:*:prompt:*' check-for-changes true
-
-  # Formats:
-  # %b - branchname
-  # %u - unstagedstr (see below)
-  # %c - stagedstr (see below)
-  # %a - action (e.g. rebase-i)
-  # %R - repository path
-  # %S - path in the repository
-  local fmt_branch="on ${__PROMPT_TANGLEDHELIX_COLORS[1]}%b %f%u%c"
-  local fmt_action="(${__PROMPT_TANGLEDHELIX_COLORS[5]}%a%f)"
-  local fmt_unstaged="${__PROMPT_TANGLEDHELIX_COLORS[2]}●%f"
-  local fmt_staged="${__PROMPT_TANGLEDHELIX_COLORS[5]}●%f"
-
-  local _prompt_m
   if [[ -n "$(command -v ec2-metadata)" ]]; then
-    _prompt_m=${${=$(ec2-metadata -i)}[2]}
+    __PROMPT_TANGLEDHELIX_HOST=${${=$(ec2-metadata -i)}[2]}
   elif [[ $(uname -n) =~ '^[^.]+\.[^.]+\.[^.]+\.[^.]' ]]; then
-    _prompt_m="%2m"
+    __PROMPT_TANGLEDHELIX_HOST='%2m'
   else
-    _prompt_m="%m"
+    __PROMPT_TANGLEDHELIX_HOST='%m'
   fi
 
-  zstyle ':vcs_info:*:prompt:*' unstagedstr   "${fmt_unstaged}"
-  zstyle ':vcs_info:*:prompt:*' stagedstr     "${fmt_staged}"
-  zstyle ':vcs_info:*:prompt:*' actionformats "${fmt_branch}${fmt_action}"
-  zstyle ':vcs_info:*:prompt:*' formats       "${fmt_branch}"
-  zstyle ':vcs_info:*:prompt:*' nvcsformats   ""
-
-  PROMPT="
-${__PROMPT_TANGLEDHELIX_COLORS[3]}%n%f at ${__PROMPT_TANGLEDHELIX_COLORS[2]}${_prompt_m}%f in ${__PROMPT_TANGLEDHELIX_COLORS[5]}%~%f "'${vcs_info_msg_0_}${fmt_git_ahead}'"
-"'$(virtualenv_info)'"\$(prompt_tangledhelix_promptchar) "
+  PROMPT='
+${__PROMPT_TANGLEDHELIX_COLORS[2]}%n%f at ${__PROMPT_TANGLEDHELIX_COLORS[3]}${__PROMPT_TANGLEDHELIX_HOST}%f in ${__PROMPT_TANGLEDHELIX_COLORS[4]}%~%f${git_info:+${(e)git_info[prompt]}}
+%B%(!.%F{red}.%F{green})$(prompt_tangledhelix_promptchar)%f%b '
+  RPROMPT='${editor_info[keymap]}${editor_info[overwrite]}%(?:: %F{red}⏎%f)${VIM:+" %B%F{green}V%f%b"}${git_info[rprompt]}'
+  SPROMPT='zsh: correct %F{red}%R%f to %F{green}%r%f [nyae]? '
 }
 
 prompt_tangledhelix_setup "$@"
