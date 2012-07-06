@@ -21,7 +21,7 @@ fi
 function prompt_tangledhelix_promptchar {
   git branch >/dev/null 2>/dev/null && echo '±' && return
   hg root >/dev/null 2>/dev/null && echo '☿' && return
-  [[ $UID -eq 0 ]] && echo '#' || echo '❯'
+  echo '❯'
 }
 
 function prompt_tangledhelix_precmd {
@@ -42,21 +42,21 @@ function prompt_tangledhelix_setup {
   add-zsh-hook precmd prompt_tangledhelix_precmd
 
   zstyle ':omz:module:editor' completing '%B%F{red}...%f%b'
-  zstyle ':omz:module:editor:keymap:primary' overwrite ' %F{red}♺%f'
-  zstyle ':omz:module:editor:keymap' alternate ' %F{yellow}❮%f%B%F{red}❮%f%b%F{red}❮%f'
+  zstyle ':omz:module:editor:keymap:primary' overwrite '%F{red}♺%f '
+  zstyle ':omz:module:editor:keymap' alternate '%F{yellow}❯%f%B%F{red}❯%f%b%F{red}❯%f '
   zstyle ':omz:module:git' action ':%%B%F{yellow}%s%f%%b'
-  zstyle ':omz:module:git' added ' %%B%F{green}✚%f%%b'
-  zstyle ':omz:module:git' ahead ' %%B%F{yellow}⬆%f%%b'
-  zstyle ':omz:module:git' behind ' %%B%F{yellow}⬇%f%%b'
+  zstyle ':omz:module:git' added '%%B%F{green}✚%f%%b '
+  zstyle ':omz:module:git' ahead '%%B%F{yellow}⬆%f%%b '
+  zstyle ':omz:module:git' behind '%%B%F{yellow}⬇%f%%b '
   zstyle ':omz:module:git' branch ':${__PROMPT_TANGLEDHELIX_COLORS[1]}%b%f'
   zstyle ':omz:module:git' commit ':%F{green}%.7c%f'
-  zstyle ':omz:module:git' deleted ' %%B%F{red}✖%f%%b'
-  zstyle ':omz:module:git' modified ' %%B%F{blue}✱%f%%b'
+  zstyle ':omz:module:git' deleted '%%B%F{red}✖%f%%b '
+  zstyle ':omz:module:git' modified '%%B%F{blue}✱%f%%b '
   zstyle ':omz:module:git' position ':%F{green}%p%f'
-  zstyle ':omz:module:git' renamed ' %%B%F{magenta}➜%f%%b'
-  zstyle ':omz:module:git' stashed ' %%B%F{cyan}✭%f%%b'
-  zstyle ':omz:module:git' unmerged ' %%B%F{yellow}═%f%%b'
-  zstyle ':omz:module:git' untracked ' %%B%F{white}◼%f%%b'
+  zstyle ':omz:module:git' renamed '%%B%F{magenta}➜%f%%b '
+  zstyle ':omz:module:git' stashed '%%B%F{cyan}✭%f%%b '
+  zstyle ':omz:module:git' unmerged '%%B%F{yellow}═%f%%b '
+  zstyle ':omz:module:git' untracked '%%B%F{white}◼%f%%b '
   zstyle ':omz:module:git' info \
     'prompt'  ' on %F{blue}git%f$(coalesce "%b" "%p" "%c")%s' \
     'rprompt' '%A%B%S%a%d%m%r%U%u'
@@ -71,8 +71,7 @@ function prompt_tangledhelix_setup {
 
   PROMPT='
 ${__PROMPT_TANGLEDHELIX_COLORS[2]}%n%f at ${__PROMPT_TANGLEDHELIX_COLORS[3]}${__PROMPT_TANGLEDHELIX_HOST}%f in ${__PROMPT_TANGLEDHELIX_COLORS[4]}%~%f${git_info:+${(e)git_info[prompt]}}
-%B%(!.%F{red}.%F{green})$(prompt_tangledhelix_promptchar)%f%b '
-  RPROMPT='${editor_info[keymap]}${editor_info[overwrite]}%(?:: %F{red}⏎%f)${VIM:+" %B%F{green}V%f%b"}${git_info[rprompt]}'
+${git_info[rprompt]}%(?::%F{red}!%f )${editor_info[keymap]}${editor_info[overwrite]}%(!.%B%F{red}#%f%b.%B%F{green}❯%f%b) '
   SPROMPT='zsh: correct %F{red}%R%f to %F{green}%r%f [nyae]? '
 }
 
