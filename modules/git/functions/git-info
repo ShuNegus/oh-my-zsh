@@ -165,8 +165,8 @@ function git-info {
   local added_format
   local added_formatted
   local ahead
-  local ahead_and_behind
-  local ahead_and_behind_cmd
+  # local ahead_and_behind
+  # local ahead_and_behind_cmd
   local ahead_format
   local ahead_formatted
   local ahead_or_behind
@@ -251,7 +251,7 @@ function git-info {
   remote_cmd='git rev-parse --symbolic-full-name --verify HEAD@{upstream}'
 
   # Gets the commit difference counts between local and remote.
-  ahead_and_behind_cmd='git rev-list --count --left-right HEAD...@{upstream}'
+  # ahead_and_behind_cmd='git rev-list --count --left-right HEAD...@{upstream}'
 
   # Ignore submodule status.
   zstyle -s ':omz:module:git:ignore' submodule 'ignore_submodule'
@@ -307,17 +307,19 @@ function git-info {
       zformat -f remote_formatted "$remote_format" "R:$remote"
 
       # Get ahead and behind counts.
-      ahead_and_behind="$(${(z)ahead_and_behind_cmd} 2> /dev/null)"
+      # ahead_and_behind="$(${(z)ahead_and_behind_cmd} 2> /dev/null)"
 
       # Format ahead.
-      ahead="$ahead_and_behind[(w)1]"
+      # ahead="$ahead_and_behind[(w)1]"
+      ahead=$(git rev-list @\{upstream\}..HEAD 2>/dev/null | wc -l)
       if (( $ahead > 0 )); then
         zstyle -s ':omz:module:git' ahead 'ahead_format'
         zformat -f ahead_formatted "$ahead_format" "A:$ahead"
       fi
 
       # Format behind.
-      behind="$ahead_and_behind[(w)2]"
+      # behind="$ahead_and_behind[(w)2]"
+      behind=$(git rev-list HEAD..@\{upstream\} 2>/dev/null | wc -l)
       if (( $behind > 0 )); then
         zstyle -s ':omz:module:git' behind 'behind_format'
         zformat -f behind_formatted "$behind_format" "B:$behind"
