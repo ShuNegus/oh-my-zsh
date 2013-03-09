@@ -19,13 +19,7 @@ else
 fi
 
 function prompt_tangledhelix_promptchar {
-  #git branch >/dev/null 2>/dev/null && echo '±' && return
-  git branch >/dev/null 2>/dev/null && echo 'git❯' && return
-  svn info >/dev/null 2>/dev/null && echo 'svn❯' && return
-  #hg root >/dev/null 2>/dev/null && echo '☿' && return
-  hg root >/dev/null 2>/dev/null && echo 'hg❯' && return
-  test -d ./CVS && echo 'cvs❯' && return
-  echo '❯'
+  [[ $UID -eq 0 || $EUID -eq 0 ]] && echo '#' || echo '%%'
 }
 
 function prompt_tangledhelix_vcsinfo {
@@ -85,7 +79,7 @@ function prompt_tangledhelix_setup {
 
   PROMPT='
 ${__PROMPT_TANGLEDHELIX_COLORS[2]}%n%f at ${__PROMPT_TANGLEDHELIX_COLORS[3]}${__PROMPT_TANGLEDHELIX_HOST}%f in ${__PROMPT_TANGLEDHELIX_COLORS[4]}%~%f${git_info:+${(e)git_info[prompt]}}${__PROMPT_TANGLEDHELIX_VCSINFO}
-${git_info[rprompt]}%(?::%F{red}!%f )${editor_info[keymap]}${editor_info[overwrite]}%B%(!.%F{red}.%F{green})❯%f%b '
+${git_info[rprompt]}%(?::%F{red}!%f )${editor_info[keymap]}${editor_info[overwrite]}%B%(!.%F{red}.%F{green})$(prompt_tangledhelix_promptchar)%f%b '
   SPROMPT='zsh: correct %F{red}%R%f to %F{green}%r%f [nyae]? '
 }
 
