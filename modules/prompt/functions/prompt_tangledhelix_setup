@@ -24,7 +24,7 @@ function prompt_tangledhelix_promptchar {
 
 function prompt_tangledhelix_vcsinfo {
 
-  test -d .svn && __PROMPT_TANGLEDHELIX_VCSINFO=" at %F{blue}svn%f:${__PROMPT_TANGLEDHELIX_COLORS[1]}r$(svn info | awk '/^Revision:/ {print $2}')%f" && return
+  test -n "$(svn info 2>/dev/null)" && __PROMPT_TANGLEDHELIX_VCSINFO=" at %F{blue}svn%f:${__PROMPT_TANGLEDHELIX_COLORS[1]}r$(svn info | awk '/^Revision:/ {print $2}')%f" && return
 
   test -d CVS && __PROMPT_TANGLEDHELIX_VCSINFO=" in %F{blue}CVS%f" && return
 
