@@ -24,7 +24,24 @@ function prompt_tangledhelix_promptchar {
 
 function prompt_tangledhelix_vcsinfo {
 
-  test -n "$(svn info 2>/dev/null)" && __PROMPT_TANGLEDHELIX_VCSINFO=" at %F{blue}svn%f:${__PROMPT_TANGLEDHELIX_COLORS[1]}r$(svn info | awk '/^Revision:/ {print $2}')%f" && return
+  local __svn_info="$(svn info 2>/dev/null)"
+
+  if [[ -n "$__svn_info" ]]; then
+
+    local __svn_rev="r$(svn info | awk '/^Revision:/ {print $2}')"
+    local __svn_url="$(svn info | awk '/^URL:/ {print $2}')"
+    local __svn_loc
+
+    if [[ $__svn_url =~ '/trunk/' ]]; then
+      __svn_loc=' on %F{blue}trunk%f'
+    elif [[ $__svn_url =~ '/branches/(.*)' ]]; then
+      __svn_loc=" on ${__PROMPT_TANGLEDHELIX_COLORS[3]}${match[1]}%f"
+    fi
+
+    __PROMPT_TANGLEDHELIX_VCSINFO=" at %F{blue}svn%f:${__PROMPT_TANGLEDHELIX_COLORS[1]}$__svn_rev%f$__svn_loc"
+
+    return
+  fi
 
   test -d CVS && __PROMPT_TANGLEDHELIX_VCSINFO=" in %F{blue}CVS%f" && return
 
