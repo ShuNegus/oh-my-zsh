@@ -34,7 +34,7 @@ function prompt_tangledhelix_vcsinfo {
 
     if [[ $__svn_url =~ '/trunk/' ]]; then
       __svn_loc=' on %F{blue}trunk%f'
-    elif [[ $__svn_url =~ '/branches/(.*)' ]]; then
+    elif [[ $__svn_url =~ '/branches/([^/]*)' ]]; then
       __svn_loc=" on ${__PROMPT_TANGLEDHELIX_COLORS[3]}${match[1]}%f"
     fi
 
