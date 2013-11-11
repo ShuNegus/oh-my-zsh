@@ -4,10 +4,10 @@
 
 if [[ $TERM = *256color* ]]; then
   __PROMPT_TANGLEDHELIX_COLORS=(
-    "%F{81}"    # turquoise
-    "%F{135}"   # purple
+    "%F{33}"    # turquoise
+    "%F{125}"   # purple
     "%F{166}"   # orange
-    "%F{118}"   # lime green
+    "%F{64}"    # green
   )
 else
   __PROMPT_TANGLEDHELIX_COLORS=(
