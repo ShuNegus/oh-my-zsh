@@ -1,22 +1,13 @@
 
 # The guts of sorin married to the look of steeef, plus tweaks.
-# Designed for Solarized Dark.
+# Colors designed for Solarized Light profile in iTerm2.
 
-if [[ $TERM = *256color* ]]; then
-  __PROMPT_TANGLEDHELIX_COLORS=(
-    "%F{33}"    # turquoise
-    "%F{125}"   # purple
-    "%F{166}"   # orange
-    "%F{64}"    # green
-  )
-else
-  __PROMPT_TANGLEDHELIX_COLORS=(
-    "%F{cyan}"
-    "%F{magenta}"
-    "%F{yellow}"
-    "%F{green}"
-  )
-fi
+__PROMPT_TANGLEDHELIX_COLORS=(
+  "%F{cyan}"
+  "%F{magenta}"
+  "%F{yellow}"
+  "%F{green}"
+)
 
 function prompt_tangledhelix_promptchar {
   [[ $UID -eq 0 || $EUID -eq 0 ]] && echo '#' || echo '%%'
@@ -33,12 +24,12 @@ function prompt_tangledhelix_vcsinfo {
     local __svn_loc
 
     if [[ $__svn_url =~ '/trunk/' ]]; then
-      __svn_loc=' on %F{blue}trunk%f'
+      __svn_loc=':%F{blue}trunk%f'
     elif [[ $__svn_url =~ '/branches/([^/]*)' ]]; then
-      __svn_loc=" on ${__PROMPT_TANGLEDHELIX_COLORS[3]}${match[1]}%f"
+      __svn_loc=":${__PROMPT_TANGLEDHELIX_COLORS[3]}${match[1]}%f"
     fi
 
-    __PROMPT_TANGLEDHELIX_VCSINFO=" at %F{blue}svn%f:${__PROMPT_TANGLEDHELIX_COLORS[1]}$__svn_rev%f$__svn_loc"
+    __PROMPT_TANGLEDHELIX_VCSINFO=" on %F{blue}svn%f:${__PROMPT_TANGLEDHELIX_COLORS[1]}$__svn_rev%f$__svn_loc"
 
     return
   fi
@@ -81,7 +72,7 @@ function prompt_tangledhelix_setup {
   zstyle ':omz:module:git' renamed '%%B%F{magenta}➜%f%%b '
   zstyle ':omz:module:git' stashed '%%B%F{cyan}✭%f%%b '
   zstyle ':omz:module:git' unmerged '%%B%F{yellow}═%f%%b '
-  zstyle ':omz:module:git' untracked '%%B%F{white}◼%f%%b '
+  zstyle ':omz:module:git' untracked '%%B%F{blue}◼%f%%b '
   zstyle ':omz:module:git' info \
     'prompt'  ' on %F{blue}git%f$(coalesce "%b" "%p" "%c")%s' \
     'rprompt' '%A%B%S%a%d%m%r%U%u'
