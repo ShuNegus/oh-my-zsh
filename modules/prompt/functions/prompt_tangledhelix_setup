@@ -17,10 +17,10 @@ function prompt_tangledhelix_vcsinfo {
 
   local __svn_info="$(svn info 2>/dev/null)"
 
-  if [[ -n "$__svn_info" ]]; then
+  if [[ $? -eq 0 && -n "$__svn_info" ]]; then
 
-    local __svn_rev="r$(svn info | awk '/^Revision:/ {print $2}')"
-    local __svn_url="$(svn info | awk '/^URL:/ {print $2}')"
+    local __svn_rev="r$(echo $__svn_info | awk '/^Revision:/ {print $2}')"
+    local __svn_url="$(echo $__svn_info | awk '/^URL:/ {print $2}')"
     local __svn_loc
 
     if [[ $__svn_url =~ '/trunk/' ]]; then
@@ -30,6 +30,25 @@ function prompt_tangledhelix_vcsinfo {
     fi
 
     __PROMPT_TANGLEDHELIX_VCSINFO=" on %F{blue}svn%f:${__PROMPT_TANGLEDHELIX_COLORS[1]}$__svn_rev%f$__svn_loc"
+
+    return
+  fi
+
+  local __hg_summary="$(hg summary 2>/dev/null)"
+
+  if [[ $? -eq 0 && -n "$__hg_summary" ]]; then
+
+    local __hg_branch="$(echo $__hg_summary | awk '/^branch:/ {print $2}')"
+    local __hg_rev="$(echo $__hg_summary | awk '/^parent:/ {if (match($0,"[0-9]+")){printf("%s",substr($0,RSTART,RLENGTH));}}')"
+    local __hg_loc
+
+    if [[ $__hg_branch = 'default' ]]; then
+      __hg_loc=':%F{blue}default%f'
+    else
+      __hg_loc=":${__PROMPT_TANGLEDHELIX_COLORS[3]}${__hg_branch}%f"
+    fi
+
+    __PROMPT_TANGLEDHELIX_VCSINFO=" on %F{blue}hg%f:${__PROMPT_TANGLEDHELIX_COLORS[1]}$__hg_rev%f$__hg_loc"
 
     return
   fi
