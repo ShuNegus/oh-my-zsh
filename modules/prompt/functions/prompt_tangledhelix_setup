@@ -58,6 +58,20 @@ function prompt_tangledhelix_vcsinfo {
   unset __PROMPT_TANGLEDHELIX_VCSINFO
 }
 
+function prompt_tangledhelix_virtualenv_auto_activate {
+    if [ -e ".venv" ]; then
+        # Check to see if already activated to avoid redundant activating
+        if [ "$VIRTUAL_ENV" != "$(pwd -P)/.venv" ]; then
+            _VENV_NAME=$(basename `pwd`)
+            echo
+            echo Activating virtualenv \"$_VENV_NAME\"...
+            VIRTUAL_ENV_DISABLE_PROMPT=1
+            source .venv/bin/activate
+            __PROMPT_TANGLEDHELIX_VENV="[venv:$_VENV_NAME]"
+        fi
+    fi
+}
+
 function prompt_tangledhelix_precmd {
   setopt LOCAL_OPTIONS
   unsetopt XTRACE KSH_ARRAYS
@@ -66,6 +80,7 @@ function prompt_tangledhelix_precmd {
     git-info
   fi
   prompt_tangledhelix_vcsinfo
+  prompt_tangledhelix_virtualenv_auto_activate
 }
 
 function prompt_tangledhelix_setup {
@@ -106,7 +121,7 @@ function prompt_tangledhelix_setup {
 
   PROMPT='
 ${__PROMPT_TANGLEDHELIX_COLORS[2]}%n%f at ${__PROMPT_TANGLEDHELIX_COLORS[3]}${__PROMPT_TANGLEDHELIX_HOST}%f in ${__PROMPT_TANGLEDHELIX_COLORS[4]}%~%f${git_info:+${(e)git_info[prompt]}}${__PROMPT_TANGLEDHELIX_VCSINFO}
-${git_info[rprompt]}%(?::%F{red}!%f )${editor_info[keymap]}${editor_info[overwrite]}%B%(!.%F{red}.%F{green})$(prompt_tangledhelix_promptchar)%f%b '
+${git_info[rprompt]}%(?::%F{red}!%f )${editor_info[keymap]}${editor_info[overwrite]}%B%(!.%F{red}.%F{green})${__PROMPT_TANGLEDHELIX_COLORS[3]}${__PROMPT_TANGLEDHELIX_VENV}%f$(prompt_tangledhelix_promptchar)%f%b '
   SPROMPT='zsh: correct %F{red}%R%f to %F{green}%r%f [nyae]? '
 }
 
