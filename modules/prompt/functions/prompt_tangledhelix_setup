@@ -53,7 +53,7 @@ function prompt_tangledhelix_vcsinfo {
     return
   fi
 
-  test -d CVS && __PROMPT_TANGLEDHELIX_VCSINFO=" in %F{blue}CVS%f" && return
+  test -d CVS && __PROMPT_TANGLEDHELIX_VCSINFO=" on %F{blue}CVS%f" && return
 
   unset __PROMPT_TANGLEDHELIX_VCSINFO
 }
@@ -78,6 +78,17 @@ function prompt_tangledhelix_virtualenv_auto_activate {
     fi
 }
 
+function prompt_tangledhelix_get_cwd {
+  if [[ $PWD = $HOME ]]; then
+    __PROMPT_TANGLEDHELIX_CWD="~"
+  elif [[ $PWD =~ "^${HOME}(.*)" ]]; then
+    __PROMPT_TANGLEDHELIX_CWD="~${match[1]}"
+  else
+    __PROMPT_TANGLEDHELIX_CWD="$PWD"
+  fi
+  return
+}
+
 function prompt_tangledhelix_precmd {
   setopt LOCAL_OPTIONS
   unsetopt XTRACE KSH_ARRAYS
@@ -87,7 +98,7 @@ function prompt_tangledhelix_precmd {
   fi
   prompt_tangledhelix_vcsinfo
   prompt_tangledhelix_virtualenv_auto_activate
-  #prompt_tangledhelix_custom_environment_per_cwd
+  prompt_tangledhelix_get_cwd
 }
 
 function prompt_tangledhelix_setup {
@@ -127,7 +138,7 @@ function prompt_tangledhelix_setup {
   fi
 
   PROMPT='
-${__PROMPT_TANGLEDHELIX_COLORS[2]}%n%f at ${__PROMPT_TANGLEDHELIX_COLORS[3]}${__PROMPT_TANGLEDHELIX_HOST}%f in ${__PROMPT_TANGLEDHELIX_COLORS[4]}%~%f${git_info:+${(e)git_info[prompt]}}${__PROMPT_TANGLEDHELIX_VCSINFO}
+${__PROMPT_TANGLEDHELIX_COLORS[2]}%n%f at ${__PROMPT_TANGLEDHELIX_COLORS[3]}${__PROMPT_TANGLEDHELIX_HOST}%f in ${__PROMPT_TANGLEDHELIX_COLORS[4]}${__PROMPT_TANGLEDHELIX_CWD}%f${git_info:+${(e)git_info[prompt]}}${__PROMPT_TANGLEDHELIX_VCSINFO}
 ${git_info[rprompt]}%(?::%F{red}!%f )${editor_info[keymap]}${editor_info[overwrite]}%B%(!.%F{red}.%F{green})${__PROMPT_TANGLEDHELIX_COLORS[3]}${__PROMPT_TANGLEDHELIX_VENV}%f$(prompt_tangledhelix_promptchar)%f%b '
   SPROMPT='zsh: correct %F{red}%R%f to %F{green}%r%f [nyae]? '
 }
