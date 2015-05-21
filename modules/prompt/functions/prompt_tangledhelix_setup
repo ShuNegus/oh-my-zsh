@@ -78,6 +78,13 @@ function prompt_tangledhelix_virtualenv_auto_activate {
     fi
 }
 
+function prompt_tangledhelix_custom_environment_per_cwd {
+    if [[ -e ".zsh-autoenv" && -z "$__PROMPT_TANGLEDHELIX_ZSH_AUTOENV" ]]; then
+        source .zsh-autoenv
+        __PROMPT_TANGLEDHELIX_ZSH_AUTOENV="(zsh:${_ZSH_AUTOENV_NAME}) "
+    fi
+}
+
 function prompt_tangledhelix_precmd {
   setopt LOCAL_OPTIONS
   unsetopt XTRACE KSH_ARRAYS
@@ -87,6 +94,7 @@ function prompt_tangledhelix_precmd {
   fi
   prompt_tangledhelix_vcsinfo
   prompt_tangledhelix_virtualenv_auto_activate
+  prompt_tangledhelix_custom_environment_per_cwd
 }
 
 function prompt_tangledhelix_setup {
@@ -127,7 +135,7 @@ function prompt_tangledhelix_setup {
 
   PROMPT='
 ${__PROMPT_TANGLEDHELIX_COLORS[2]}%n%f at ${__PROMPT_TANGLEDHELIX_COLORS[3]}${__PROMPT_TANGLEDHELIX_HOST}%f in ${__PROMPT_TANGLEDHELIX_COLORS[4]}%~%f${git_info:+${(e)git_info[prompt]}}${__PROMPT_TANGLEDHELIX_VCSINFO}
-${git_info[rprompt]}%(?::%F{red}!%f )${editor_info[keymap]}${editor_info[overwrite]}%B%(!.%F{red}.%F{green})${__PROMPT_TANGLEDHELIX_COLORS[3]}${__PROMPT_TANGLEDHELIX_VENV}%f$(prompt_tangledhelix_promptchar)%f%b '
+${git_info[rprompt]}%(?::%F{red}!%f )${editor_info[keymap]}${editor_info[overwrite]}%B%(!.%F{red}.%F{green})%F{red}${__PROMPT_TANGLEDHELIX_ZSH_AUTOENV}%f${__PROMPT_TANGLEDHELIX_COLORS[3]}${__PROMPT_TANGLEDHELIX_VENV}%f$(prompt_tangledhelix_promptchar)%f%b '
   SPROMPT='zsh: correct %F{red}%R%f to %F{green}%r%f [nyae]? '
 }
 
