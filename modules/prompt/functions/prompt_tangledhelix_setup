@@ -83,6 +83,7 @@ function prompt_tangledhelix_custom_environment_per_cwd {
         source .zsh-autoenv
         __PROMPT_TANGLEDHELIX_ZSH_AUTOENV="(zsh:${_ZSH_AUTOENV_NAME}) "
     fi
+    return
 }
 
 function prompt_tangledhelix_precmd {
