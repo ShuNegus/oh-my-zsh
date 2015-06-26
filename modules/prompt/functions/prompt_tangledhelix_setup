@@ -15,10 +15,6 @@ function prompt_tangledhelix_promptchar {
 
 function prompt_tangledhelix_vcsinfo {
 
-  if [[ -n "$__PROMPT_TANGLEDHELIX_SUPPRESS_VCSINFO" ]]; then
-    return
-  fi
-
   local __svn_info="$(svn info 2>/dev/null)"
 
   if [[ $? -eq 0 && -n "$__svn_info" ]]; then
@@ -97,10 +93,12 @@ function prompt_tangledhelix_precmd {
   setopt LOCAL_OPTIONS
   unsetopt XTRACE KSH_ARRAYS
 
-  if (( $+functions[git-info] )); then
-    git-info
+  if [[ -z "$__PROMPT_TANGLEDHELIX_SUPPRESS_VCSINFO" ]]; then
+    if (( $+functions[git-info] )); then
+      git-info
+    fi
+    prompt_tangledhelix_vcsinfo
   fi
-  prompt_tangledhelix_vcsinfo
   prompt_tangledhelix_virtualenv_auto_activate
   prompt_tangledhelix_get_cwd
 }
