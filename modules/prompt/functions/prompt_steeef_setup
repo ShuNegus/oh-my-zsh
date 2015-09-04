@@ -11,7 +11,7 @@
 
 function virtualenv_info {
   if [[ -n "$VIRTUAL_ENV" ]]; then
-    print "(${VIRTUAL_ENV:t}) "
+    print "${__PROMPT_STEEEF_COLORS[1]}venv%f:${__PROMPT_STEEEF_COLORS[4]}${_VENV_NAME:t}%f "
   fi
 }
 
